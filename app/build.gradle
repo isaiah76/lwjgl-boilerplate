@@ -7,27 +7,33 @@ repositories {
     mavenCentral()
 }
 
-import org.gradle.internal.os.OperatingSystem
-
 ext {
     lwjglVersion = '3.3.4'
-    lwjglNatives = {
-        if (OperatingSystem.current().isMacOsX()) return "natives-macos"
-        if (OperatingSystem.current().isLinux()) return "natives-linux"
-        return "natives-windows"
-    }.call()
+    
+    lwjglPlatforms = [
+        "natives-windows",
+        "natives-windows-arm64",
+        "natives-linux",
+        "natives-linux-arm64",
+        "natives-macos",
+        "natives-macos-arm64"
+    ]
 }
 
 dependencies {
-    implementation platform("org.lwjgl:lwjgl-bom:3.3.4")
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
     implementation "org.lwjgl:lwjgl"
     implementation "org.lwjgl:lwjgl-glfw"
     implementation "org.lwjgl:lwjgl-opengl"
+    implementation "org.lwjgl:lwjgl-stb"
 
-    runtimeOnly "org.lwjgl:lwjgl::natives-linux"
-    runtimeOnly "org.lwjgl:lwjgl-glfw::natives-linux"
-    runtimeOnly "org.lwjgl:lwjgl-opengl::natives-linux"
+    lwjglPlatforms.each { platform ->
+        runtimeOnly "org.lwjgl:lwjgl::$platform"
+        runtimeOnly "org.lwjgl:lwjgl-glfw::$platform"
+        runtimeOnly "org.lwjgl:lwjgl-opengl::$platform"
+        runtimeOnly "org.lwjgl:lwjgl-stb::$platform"
+    }
 }
 
 application {
