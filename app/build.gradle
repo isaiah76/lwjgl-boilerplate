@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+import org.gradle.internal.os.OperatingSystem
+
+ext {
+    lwjglVersion = '3.3.4'
+    lwjglNatives = {
+        if (OperatingSystem.current().isMacOsX()) return "natives-macos"
+        if (OperatingSystem.current().isLinux()) return "natives-linux"
+        return "natives-windows"
+    }.call()
+}
+
+dependencies {
+    implementation platform("org.lwjgl:lwjgl-bom:3.3.4")
+
+    implementation "org.lwjgl:lwjgl"
+    implementation "org.lwjgl:lwjgl-glfw"
+    implementation "org.lwjgl:lwjgl-opengl"
+
+    runtimeOnly "org.lwjgl:lwjgl::natives-linux"
+    runtimeOnly "org.lwjgl:lwjgl-glfw::natives-linux"
+    runtimeOnly "org.lwjgl:lwjgl-opengl::natives-linux"
+}
+
+application {
+    mainClass = 'org.example.Main'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
